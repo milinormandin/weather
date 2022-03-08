@@ -15,14 +15,14 @@ app.get("/", function(req, res) {
 app.post("/", function(req, res) {
     
     // takes in the zip from the html form, display in // console. Takes in as string, ex. for zip 02139
-        var city = String(req.body.cityInput);
+        var cityID = String(req.body.cityInput);
         console.log(req.body.cityInput);
     
     //build up the URL for the JSON query, API Key is // secret and needs to be obtained by signup 
         const units = "imperial";
   // Using my api key
         const apiKey = "3ada98762763443f14a4af376b6cf373";
-        const url = "https://api.openweathermap.org/data/2.5/weather?q=" + city +  "&units=" + units + "&APPID=" + apiKey;
+        const url = "https://api.openweathermap.org/data/2.5/weather?id=" + cityID +  "&units=" + units + "&APPID=" + apiKey;
     
     // this gets the data from Open WeatherPI
     https.get(url, function(response){
@@ -34,7 +34,7 @@ app.post("/", function(req, res) {
           console.log(weatherData)
           
             const temp = weatherData.main.temp;
-            const city = weatherData.name;
+            const cityID = weatherData.name;
             const weatherDescription = weatherData.weather[0].description;
             const icon = weatherData.weather[0].icon;
             const imageURL = "http://openweathermap.org/img/wn/" + icon + "@2x.png";
@@ -44,12 +44,23 @@ app.post("/", function(req, res) {
 
           // getting windspeed
           const windspeed = weatherData.wind.speed;
+
+          // getting wind degree
+          const wind_deg = weatherData.wind.deg;
+
+          //getting cloudiness
+          const cloudiness = weatherData.clouds.all;
             
             // displays the output of the results
             res.write("<h1> The weather is " + weatherDescription + "<h1>");
-            res.write("<h2>The Temperature in " + city + " " + " is " + temp + " Degrees Fahrenheit<h2>");
-          // displating windspeed and humidity
-            res.write("<h2>The Humidity is " + humidity + " " + " the windspeed is  " + windspeed);
+            res.write("<h2>The Temperature in " + cityID + " " + " is " + temp + " Degrees Fahrenheit<h2>");
+          // displating humidity
+            res.write("<h2>The Humidity is " + humidity + "% </h2>");
+          // Displaying windspeed and direction
+            res.write("<h2>The Windspeed is " + windspeed + " miles/hour with a " + wind_deg + " degree wind direction. </h2>" );
+
+              // Displaying cloudiness
+            res.write("<h2>Cloudiness is " + cloudiness + "% </h2>" );
             res.write("<br><img src=" + imageURL +">");
             res.send();
         });
